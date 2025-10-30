@@ -2,7 +2,7 @@ diff --git a/doc/socat.1 b/doc/socat.1
 index 7137fd0..d2b3cad 100644
 --- a/doc/socat.1
 +++ b/doc/socat.1
-@@ -970,19 +970,9 @@ UNIX\-LISTEN,
+@@ -990,19 +990,9 @@ UNIX\-LISTEN,
  PIPE,
  EXEC, SYSTEM, SHELL
  .IP "\fB\f(CWREADLINE\fP\fP"
@@ -25,7 +25,7 @@ index 7137fd0..d2b3cad 100644
  .IP "\fB\f(CWSCTP\-CONNECT:<host>:<port>\fP\fP"
  Establishes an SCTP stream connection to the specified <host> [IP
  address] and <port> [TCP service]
-@@ -2524,6 +2514,8 @@ Only on Linux; requires root; use option \f(CW\-\-experimental\fP\&.
+@@ -2555,6 +2545,8 @@ Only on Linux; requires root; use option \f(CW\-\-experimental\fP\&.
  .PP 
  \fI\fBREADLINE option group\fP\fP
  .PP 
@@ -34,7 +34,7 @@ index 7137fd0..d2b3cad 100644
  These options apply to the readline address type\&.
  .IP "\fB\f(CWhistory=<filename>\fP\fP"
  Reads and writes history from/to <filename> (example)\&.
-@@ -4054,22 +4046,6 @@ close the relay with ^D or abort it with ^C\&.
+@@ -4122,22 +4114,6 @@ close the relay with ^D or abort it with ^C\&.
  .IP 
  \.LP
  \.nf
@@ -57,7 +57,7 @@ index 7137fd0..d2b3cad 100644
  \fBsocat \\
  \.RS
  \fBTCP4-LISTEN:www \\ 
-@@ -4166,7 +4142,6 @@ modem\&. rawer sets the console\(cq\&s and
+@@ -4234,7 +4210,6 @@ modem\&. rawer sets the console\(cq\&s and
  ttyS0\(cq\&s terminal parameters to practicable values, crnl 
  converts to correct newline characters\&. escape allows
  terminating the socat process with character control\-O\&. 
@@ -65,7 +65,7 @@ index 7137fd0..d2b3cad 100644
  .IP 
  \.LP
  \.nf
-@@ -4244,22 +4219,6 @@ process\&.
+@@ -4312,22 +4287,6 @@ process\&.
  \.nf
  \fBsocat \\
  \.RS
@@ -88,7 +88,7 @@ index 7137fd0..d2b3cad 100644
  \fBPTY,link=$HOME/dev/vmodem0,rawer,wait-slave \\ 
  EXEC:'"ssh modemserver.us.org socat \- /dev/ttyS0,nonblock,rawer"'\fP
  \.RE
-@@ -4942,7 +4901,8 @@ Verbose modes (\-x and/or \-v) display line termination characters inconsistentl
+@@ -5010,7 +4969,8 @@ Verbose modes (\-x and/or \-v) display line termination characters inconsistentl
  when address options cr or crnl are used: They show the data \fIafter\fP
  conversion in either direction\&.
  .PP 

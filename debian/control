@@ -8,7 +8,7 @@ Rules-Requires-Root: no
 Homepage: https://www.dest-unreach.org/socat/
 
 Package: socat
-Architecture: any
+Architecture: linux-any
 Depends: ${shlibs:Depends},${misc:Depends}
 Description: multipurpose relay for bidirectional data transfer
  Socat (for SOcket CAT) establishes two bidirectional byte streams

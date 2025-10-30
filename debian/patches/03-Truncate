@@ -1,5 +1,6 @@
 Error instead of warn on address truncation.
 
+Forwarded: no
 Author: Chris Taylor <ctaylor@debian.org>
 --- socat-1.7.2.4.orig/xio-unix.c
 +++ socat-1.7.2.4/xio-unix.c

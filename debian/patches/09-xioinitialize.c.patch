@@ -1,6 +1,6 @@
 --- a/xioinitialize.c	2019-04-04 10:59:55.000000000 +0200
 +++ b/xioinitialize.c	2022-09-02 19:20:22.000000000 +0200
-@@ -27,10 +27,15 @@
+@@ -28,10 +28,15 @@
     assert(sizeof(uint32_t)==4);
  
     /* assertions regarding O_ flags - important for XIO_READABLE() etc. */

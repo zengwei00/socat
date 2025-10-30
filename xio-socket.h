@@ -6,14 +6,19 @@
 #define __xio_socket_h_included 1
 
 /* SO_PROTOTYPE is defined on Solaris, HP-UX
-   SO_PROTOCOL in Linux, is the better name, but came much later */
+   SO_PROTOCOL in Linux, is the better name, but came much later, now
+   standardised in POSIX 2024
+   illumos defines both, with SO_PROTOCOL as an alias of SO_PROTOTYPE */
 #ifdef SO_PROTOCOL
-#  undef SO_PROTOTYPE
+#  ifndef SO_PROTOTYPE
 #    define SO_PROTOTYPE SO_PROTOCOL
+#  endif
 #else
 #  ifdef SO_PROTOTYPE
 #    define SO_PROTOCOL SO_PROTOTYPE
 #  else
+/* Even when SO_PROTOCOL is not available for setsockopt() Socat uses it
+   internally as option for 3rd arg of socket() e.a. */
 #    define SO_PROTOCOL 0x9999
 #    define SO_PROTOTYPE SO_PROTOCOL
 #  endif
@@ -78,6 +83,8 @@ extern const struct optdesc opt_setsockopt_bin;
 extern const struct optdesc opt_setsockopt_string;
 extern const struct optdesc opt_setsockopt_listen;
 extern const struct optdesc opt_null_eof;
+extern const struct optdesc opt_setsockopt_socket;
+extern const struct optdesc opt_setsockopt_connected;
 
 
 extern
@@ -130,8 +137,6 @@ extern int xioparserange(const char *rangename, int pf, struct xiorange *range, 
 
 extern int
 xiosocket(struct opt *opts, int pf, int socktype, int proto, int level);
-extern int
-xiosocketpair(struct opt *opts, int pf, int socktype, int proto, int sv[2]);
 extern int xiosock_reuseaddr(int fd, int ipproto, struct opt *opts);
 
 #endif /* !defined(__xio_socket_h_included) */

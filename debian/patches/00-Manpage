@@ -1,18 +1,13 @@
+Description: Port manpage fixes to 1.8.0.3 and add new ones
 Author: Vasyl Gello <vasek.gello@gmail.com>
-Last-Updated: 2023-12-08
-Forwarded: not-needed
-Subject: Port manpage fixes to 1.8.0.0 and add new ones
-
-Originally made by Chris Taylor <ctaylor@debian.org> and modified
-by Laszlo Boszormenyi (GCS) <gcs@debian.org>
+Last-Update: 2025-04-01
+Forwarded: no
 
 ---
 
-diff --git a/doc/socat.1 b/doc/socat.1
-index bad37c0..7137fd0 100644
 --- a/doc/socat.1
 +++ b/doc/socat.1
-@@ -101,7 +101,7 @@ Writes messages to syslog instead of stderr; severity as defined with \-d
+@@ -101,7 +101,7 @@ Writes messages to syslog instead of std
  option\&. With optional <facility>, the syslog type can
  be selected, default is \(dq\&daemon\(dq\&\&. Third party libraries might not obey this
  option\&.
@@ -21,7 +16,7 @@ index bad37c0..7137fd0 100644
  Writes messages to <logfile> [filename] instead of
  stderr\&. Some third party libraries, in particular libwrap, might not obey
  this option\&.
-@@ -4042,7 +4042,7 @@ with
+@@ -4110,7 +4110,7 @@ with
  .PP 
  \.LP
  \.nf
@@ -30,7 +25,7 @@ index bad37c0..7137fd0 100644
  \.RE
  \.fi
  .IP 
-@@ -4054,7 +4054,7 @@ close the relay with ^D or abort it with ^C\&.
+@@ -4122,7 +4122,7 @@ close the relay with ^D or abort it with
  .IP 
  \.LP
  \.nf
@@ -39,7 +34,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBREADLINE,history=$HOME/.http_history \\ 
  TCP4:www.domain.org:www,crnl\fP
-@@ -4085,7 +4085,7 @@ a second connection\&.
+@@ -4153,7 +4153,7 @@ a second connection\&.
  .IP 
  \.LP
  \.nf
@@ -48,7 +43,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBTCP4-LISTEN:80,bind=myaddr1,reuseaddr,fork,su=nobody,range=10.0.0.0/8 \\ 
  TCP4:www.domain.org:80,bind=myaddr2\fP
-@@ -4194,7 +4194,7 @@ session with a given set of addresses and ports\&.
+@@ -4262,7 +4262,7 @@ session with a given set of addresses an
  .IP 
  \.LP
  \.nf
@@ -57,7 +52,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fB/tmp/readdata,seek-end=0,ignoreeof \\
  \fBSTDIO\fP
-@@ -4213,9 +4213,9 @@ might also be a listening UNIX domain socket (do not use a seek option then)\&.
+@@ -4281,9 +4281,9 @@ might also be a listening UNIX domain so
  \.LP
  \.nf
  \fB(sleep 5; echo PASSWORD; sleep 5; echo ls; sleep 1) | \\
@@ -69,7 +64,7 @@ index bad37c0..7137fd0 100644
  \.RE
  \.fi
  .IP 
-@@ -4226,7 +4226,7 @@ a new process group (setsid), so ssh accepts the password from \fBsocat\fP\&.
+@@ -4294,7 +4294,7 @@ a new process group (setsid), so ssh acc
  .IP 
  \.LP
  \.nf
@@ -78,7 +73,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBTCP4-LISTEN:3334,reuseaddr,fork \\ 
  OPEN:/tmp/in.log,creat,append\fP
-@@ -4261,7 +4261,7 @@ prompts\&.
+@@ -4329,7 +4329,7 @@ prompts\&.
  \fBsocat \\
  \.RS
  \fBPTY,link=$HOME/dev/vmodem0,rawer,wait-slave \\ 
@@ -87,7 +82,7 @@ index bad37c0..7137fd0 100644
  \.RE
  \.fi
  .IP 
-@@ -4275,7 +4275,7 @@ to a modemserver via ssh where another socat instance links it to
+@@ -4343,7 +4343,7 @@ to a modemserver via ssh where another s
  .IP 
  \.LP
  \.nf
@@ -96,7 +91,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBTCP4-LISTEN:8000,reuseaddr,fork,netns=namespace1 \\ 
  TCP4-CONNECT:server2:8000\fP
-@@ -4287,7 +4287,7 @@ on port 8000 and forwards them to server2\&.
+@@ -4355,7 +4355,7 @@ on port 8000 and forwards them to server
  .IP 
  \.LP
  \.nf
@@ -105,7 +100,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBTUN:192.168.2.1/24,up \\ 
  TUN:192.168.2.2/24,up,netns=namespace2\fP
-@@ -4316,7 +4316,7 @@ should establish connections to host www\&.domain\&.org on port 22 then\&.
+@@ -4384,7 +4384,7 @@ should establish connections to host www
  .IP 
  \.LP
  \.nf
@@ -114,7 +109,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBSSL:server:4443,cafile=./server.crt,cert=./client.pem\fP
  \.RE
-@@ -4355,7 +4355,7 @@ see the additional socat docu \f(CWsocat\-openssl\&.txt\fP\&.
+@@ -4423,7 +4423,7 @@ see the additional socat docu \f(CWsocat
  \.LP
  \.nf
  \fBecho |
@@ -123,7 +118,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBFILE:/tmp/bigfile,create,largefile,seek=100000000000\fP
  \.RE
-@@ -4372,7 +4372,7 @@ the resulting file can consume some disk space with just its inodes (reiserfs:
+@@ -4440,7 +4440,7 @@ the resulting file can consume some disk
  \fBsocat \\
  \.RS
  \fBTCP-L:7777,reuseaddr,fork \\ 
@@ -132,7 +127,7 @@ index bad37c0..7137fd0 100644
  \.RE
  \.fi
  .IP 
-@@ -4383,8 +4383,8 @@ stderr (your terminal window)\&.
+@@ -4451,8 +4451,8 @@ stderr (your terminal window)\&.
  .IP 
  \.LP
  \.nf
@@ -143,7 +138,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBFILE:/usr/bin/squid.exe,seek=0x00074420\fP
  \.RE
-@@ -4396,7 +4396,7 @@ to make the squid executable from Cygwin run under Windows, in 2004)\&.
+@@ -4464,7 +4464,7 @@ to make the squid executable from Cygwin
  .IP 
  \.LP
  \.nf
@@ -152,7 +147,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBTCP:www.blackhat.org:31337,readbytes=1000\fP
  \.RE
-@@ -4406,7 +4406,7 @@ connects to an unknown service and prevents being flooded\&.
+@@ -4474,7 +4474,7 @@ connects to an unknown service and preve
  .IP 
  \.LP
  \.nf
@@ -161,7 +156,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBTCP:target:9999,end-close \\ 
  TCP-L:8888,reuseaddr,fork\fP
-@@ -4434,7 +4434,7 @@ socket type to SOCK_DCCP=6 (on Linux) and the IP protocol to IPPROTO_DCCP=33\&.
+@@ -4502,7 +4502,7 @@ socket type to SOCK_DCCP=6 (on Linux) an
  .IP 
  \.LP
  \.nf
@@ -170,7 +165,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBTCP:<server>:10021,reuseaddr,socktype=6,protocol=33,fork\fP
  \.RE
-@@ -4446,7 +4446,7 @@ socket type to SOCK_DCCP=6 (on Linux) and the IP protocol to IPPROTO_DCCP=33\&.
+@@ -4514,7 +4514,7 @@ socket type to SOCK_DCCP=6 (on Linux) an
  .IP 
  \.LP
  \.nf
@@ -179,7 +174,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBUDP4-DATAGRAM:192.168.1.0:123,sp=123,broadcast,range=192.168.1.0/24\fP
  \.RE
-@@ -4457,7 +4457,7 @@ timeservers there\&. Ignores NTP packets from hosts outside this network\&.
+@@ -4525,7 +4525,7 @@ timeservers there\&. Ignores NTP packets
  .IP 
  \.LP
  \.nf
@@ -188,7 +183,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBSOCKET-DATAGRAM:2:2:17:x007bxc0a80100x0000000000000000,bind=x007bx00000000x0000000000000000,setsockopt-int=1:6:1,range=x0000xc0a80100x0000000000000000:x0000xffffff00x0000000000000000\fP
  \.RE
-@@ -4470,7 +4470,7 @@ specified in generic form\&. the value 6 of setsockopt\-int is the Linux value f
+@@ -4538,7 +4538,7 @@ specified in generic form\&. the value 6
  .IP 
  \.LP
  \.nf
@@ -197,7 +192,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBIP4-DATAGRAM:255.255.255.255:44,broadcast,range=10.0.0.0/8\fP
  \.RE
-@@ -4481,7 +4481,7 @@ from the private address range only\&.
+@@ -4549,7 +4549,7 @@ from the private address range only\&.
  .IP 
  \.LP
  \.nf
@@ -206,7 +201,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBUDP4-DATAGRAM:224.255.0.1:6666,bind=:6666,ip-add-membership=224.255.0.1:eth0\fP
  \.RE
-@@ -4512,7 +4512,7 @@ might thus cause packet loss\&.
+@@ -4580,7 +4580,7 @@ might thus cause packet loss\&.
  .IP 
  \.LP
  \.nf
@@ -215,7 +210,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBVSOCK-CONNECT:2:1234\fP
  \.RE
-@@ -4523,7 +4523,7 @@ the well\-know CID=2) on 1234 port\&.
+@@ -4591,7 +4591,7 @@ the well\-know CID=2) on 1234 port\&.
  .IP 
  \.LP
  \.nf
@@ -224,7 +219,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBVSOCK-LISTEN:1234\fP
  \.RE
-@@ -4533,7 +4533,7 @@ listens for a VSOCK connection on 1234 port\&.
+@@ -4601,7 +4601,7 @@ listens for a VSOCK connection on 1234 p
  .IP 
  \.LP
  \.nf
@@ -233,25 +228,25 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBVSOCK-CONNECT:31:4321,bind:5555\fP
  \.RE
-@@ -4598,7 +4598,7 @@ both devices\&. Use pppd on device \f(CW/var/run/ppp\fP then\&.
+@@ -4666,7 +4666,7 @@ both devices\&. Use pppd on device \f(CW
  .IP 
  \.LP
  \.nf
--\fBsocat --experimental -u \\
-+\fBsocat \-\-experimental \-u \\
+-\fBsocat -u \\
++\fBsocat \-u \\
  \.RS
  \fBSTDIO \\ 
  POSIXMQ-SEND:/queue1,unlink-early,mq-prio=10\fP
-@@ -4610,7 +4610,7 @@ into POSIX message queue, with priority 10\&.
+@@ -4678,7 +4678,7 @@ into POSIX message queue, with priority
  .IP 
  \.LP
  \.nf
--\fBsocat --experimental -u \\
-+\fBsocat \-\-experimental \-u \\
+-\fBsocat -u \\
++\fBsocat \-u \\
  \.RS
  \fBPOSIXMQ-RECV:/queue1,fork,max-children=3 \\ 
- SYSTEM:"robot.sh"\fP
-@@ -4624,10 +4624,10 @@ processes are allowed at the same time\&.
+ SYSTEM:"worker.sh"\fP
+@@ -4692,10 +4692,10 @@ processes are allowed at the same time\&
  .IP 
  \.LP
  \.nf
@@ -264,7 +259,7 @@ index bad37c0..7137fd0 100644
  \.RE
  \.fi
  .IP 
-@@ -4639,7 +4639,7 @@ servers), and the original client request\&.
+@@ -4707,7 +4707,7 @@ servers), and the original client reques
  .IP 
  \.LP
  \.nf
@@ -273,7 +268,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBUDP4-RECVFROM:9999,so-broadcast,so-timestamp,ip-pktinfo,ip-recverr,ip-recvopts,ip-recvtos,ip-recvttl!!- \\ 
  SYSTEM:'export; sleep 1' |\fP
-@@ -4656,8 +4656,8 @@ unicast, multicast, or broadcast address\&.
+@@ -4724,8 +4724,8 @@ unicast, multicast, or broadcast address
  .IP 
  \.LP
  \.nf
@@ -284,7 +279,7 @@ index bad37c0..7137fd0 100644
  \.RS
  \fBUDP-DATAGRAM:239.255.255.250:1900,crlf\fP
  \.RE
-@@ -4668,7 +4668,7 @@ and collects and outputs the answers received\&.
+@@ -4736,7 +4736,7 @@ and collects and outputs the answers rec
  .IP 
  \.LP
  \.nf

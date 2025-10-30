@@ -1,10 +1,14 @@
 config.log
 cannot.lst
 failed.lst
-result.txt
+results.txt
+socat-readline.cat.log
 testalt.conf
 testcert*.conf
 test*.pem
 test*.crt
 test*.key
 testcert.dh
+success.lst
+relsleep
+usleep

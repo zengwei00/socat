@@ -98,6 +98,10 @@ typedef int sig_atomic_t;
 #  define SOL_IPV6 IPPROTO_IPV6
 #endif
 
+#ifndef EAI_NODATA
+#  define EAI_NODATA 7 	/* for old FreeBSD */
+#endif
+
 #define F_uint8_t "%hu"
 #define F_uint8_x "%02hx"
 #define F_int8_t  "%hd"
@@ -851,6 +855,8 @@ typedef unsigned long T_sigset;
 
 #if !defined(NETDB_INTERNAL) && defined(h_NETDB_INTERNAL)
 #  define NETDB_INTERNAL h_NETDB_INTERNAL
+#elif !defined(NETDB_INTERNAL)
+#  define NETDB_INTERNAL (-1)
 #endif
 
 #ifndef INET_ADDRSTRLEN

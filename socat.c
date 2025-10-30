@@ -45,7 +45,7 @@ struct socat_opts {
    false,	/* verbhex */
    {1,0},	/* pollintv */
    {0,500000},	/* closwait */
-   {0,0},	/* total_timeout */
+   {0,1000000},	/* total_timeout (this invalid default means no timeout)*/
    0,		/* debug */
    0,		/* strictopts */
    's',		/* logopt */
@@ -274,9 +274,16 @@ int main(int argc, const char *argv[]) {
 	    }
 	 }
 	 rto = Strtod(a, (char **)&a, "-T");
-	 socat_opts.total_timeout.tv_sec = rto;
-	 socat_opts.total_timeout.tv_usec =
-	    (rto-socat_opts.total_timeout.tv_sec) * 1000000;
+	 if (rto < 0) {
+	    socat_opts.total_timeout.tv_sec = 0; 	/* infinite */
+	    socat_opts.total_timeout.tv_usec = 1000000;	/* by invalid */
+	 } else {
+	    socat_opts.total_timeout.tv_sec = rto;
+	    socat_opts.total_timeout.tv_usec =
+	       (rto-socat_opts.total_timeout.tv_sec) * 1000000;
+	 }
+	 xioparms.total_timeout.tv_sec  = socat_opts.total_timeout.tv_sec;
+	 xioparms.total_timeout.tv_usec = socat_opts.total_timeout.tv_usec;
 	 break;
       case 'u':  if (arg1[0][2])  { socat_opt_hint(stderr, arg1[0][1], arg1[0][2]); Exit(1); }
 	 socat_opts.lefttoright = true; break;
@@ -313,6 +320,7 @@ int main(int argc, const char *argv[]) {
 	 socat_opts.lock.intervall.tv_nsec = 0;
 	 break;
 #if WITH_IP4 || WITH_IP6
+      case '0':
 #if WITH_IP4
       case '4':
 #endif
@@ -427,6 +435,13 @@ int main(int argc, const char *argv[]) {
    }
 #endif /* WITH_STATS */
 
+   /* Display important info, values may be set by:
+      ./configure --enable-default-ipv=0|4|6
+      env SOCAT_PREFERRED_RESOLVE_IP, SOCAT_DEFAULT_LISTEN_IP
+      options -0 -4 -6  */
+   Info1("default listen IP version is %c", xioparms.default_ip);
+   Info1("preferred resolve IP version is %c", xioparms.preferred_ip);
+
    result = socat(arg1[0], arg1[1]);
    if (result == EXIT_SUCCESS && engine_result != EXIT_SUCCESS) {
       result = engine_result; 	/* a signal handler reports failure */
@@ -476,6 +491,9 @@ void socat_usage(FILE *fd) {
    fputs("      -g     do not check option groups\n", fd);
    fputs("      -L <lockfile>  try to obtain lock, or fail\n", fd);
    fputs("      -W <lockfile>  try to obtain lock, or wait\n", fd);
+#if WITH_IP4 || WITH_IP6
+   fputs("      -0     do not prefer an IP version\n", fd);
+#endif
 #if WITH_IP4
    fputs("      -4     prefer IPv4 if version is not explicitly specified\n", fd);
 #endif
@@ -709,6 +727,11 @@ void socat_version(FILE *fd) {
 #else
    fputs("  #undef WITH_RETRY\n", fd);
 #endif
+#ifdef WITH_DEVTESTS
+   fprintf(fd, "  #define WITH_DEVTESTS %d\n", WITH_DEVTESTS);
+#else
+   fputs("  #undef WITH_DEVTESTS\n", fd);
+#endif
 #ifdef WITH_MSGLEVEL
    fprintf(fd, "  #define WITH_MSGLEVEL %d /*%s*/\n", WITH_MSGLEVEL,
 	   &"debug\0\0\0info\0\0\0\0notice\0\0warn\0\0\0\0error\0\0\0fatal\0\0\0"[WITH_MSGLEVEL<<3]);
@@ -762,7 +785,7 @@ int socat(const char *address1, const char *address2) {
       int i;
       for (i = 0; i < NUMUNKNOWN; ++i) {
 	 if (XIO_RDSTREAM(sock1)->para.exec.pid == diedunknown[i]) {
-	    /* child has alread died... but it might have put regular data into
+	    /* Child has already died... but it might have put regular data into
 	       the communication channel, so continue */
 	    Info2("child "F_pid" has already died with status %d",
 		  XIO_RDSTREAM(sock1)->para.exec.pid, statunknown[i]);
@@ -805,7 +828,7 @@ int socat(const char *address1, const char *address2) {
       int i;
       for (i = 0; i < NUMUNKNOWN; ++i) {
 	 if (XIO_RDSTREAM(sock2)->para.exec.pid == diedunknown[i]) {
-	    /* child has alread died... but it might have put regular data into
+	    /* Child has already died... but it might have put regular data into
 	       the communication channel, so continue */
 	    Info2("child "F_pid" has already died with status %d",
 		  XIO_RDSTREAM(sock2)->para.exec.pid, statunknown[i]);
@@ -842,11 +865,12 @@ int childleftdata(xiofile_t *xfd) {
        XIO_RDSTREAM(xfd)->para.exec.pid == 0) {
       struct timeval timeout = { 0, 0 };
 
-      if (XIO_READABLE(xfd) && !(XIO_RDSTREAM(xfd)->eof >= 2 && !XIO_RDSTREAM(xfd)->ignoreeof)) {
-	 in.fd = XIO_GETRDFD(xfd);
-	 in.events = POLLIN/*|POLLRDBAND*/;
-	 in.revents = 0;
-      }
+      if (XIO_RDSTREAM(xfd)->eof >= 2 && !XIO_RDSTREAM(xfd)->ignoreeof)
+	 return 0;
+
+      in.fd = XIO_GETRDFD(xfd);
+      in.events = POLLIN/*|POLLRDBAND*/;
+      in.revents = 0;
       do {
 	 int _errno;
 	 retval = xiopoll(&in, 1, &timeout);
@@ -854,7 +878,7 @@ int childleftdata(xiofile_t *xfd) {
       } while (retval < 0 && errno == EINTR);
 
       if (retval < 0) {
-	 Error5("xiopoll({%d,%0o}, 1, {"F_tv_sec"."F_tv_usec"}): %s",
+	 Error5("xiopoll({%d,0%o}, 1, {"F_tv_sec"."F_tv_usec"}): %s",
 		in.fd, in.events, timeout.tv_sec, timeout.tv_usec,
 		strerror(errno));
 	 return -1;
@@ -992,8 +1016,7 @@ int _socat(void) {
       /* for ignoreeof */
       if (polling) {
 	 if (!wasaction) {
-	    if (socat_opts.total_timeout.tv_sec != 0 ||
-		socat_opts.total_timeout.tv_usec != 0) {
+	    if (socat_opts.total_timeout.tv_usec < 1000000) {
 	       if (total_timeout.tv_usec < socat_opts.pollintv.tv_usec) {
 		  total_timeout.tv_usec += 1000000;
 		  total_timeout.tv_sec  -= 1;
@@ -1017,8 +1040,7 @@ int _socat(void) {
 	 /* there is a ignoreeof poll timeout, use it */
 	 timeout = socat_opts.pollintv;
 	 to = &timeout;
-      } else if (socat_opts.total_timeout.tv_sec != 0 ||
-		 socat_opts.total_timeout.tv_usec != 0) {
+      } else if (socat_opts.total_timeout.tv_usec < 1000000) {
 	 /* there might occur a total inactivity timeout */
 	 timeout = socat_opts.total_timeout;
 	 to = &timeout;
@@ -1112,7 +1134,7 @@ int _socat(void) {
 	 */
 
       if (retval < 0) {
-	 Error11("xiopoll({%d,%0o}{%d,%0o}{%d,%0o}{%d,%0o}, 4, {"F_tv_sec"."F_tv_usec"}): %s",
+	 Error11("xiopoll({%d,0%o}{%d,0%o}{%d,0%o}{%d,0%o}, 4, {"F_tv_sec"."F_tv_usec"}): %s",
 		 fds[0].fd, fds[0].events, fds[1].fd, fds[1].events,
 		 fds[2].fd, fds[2].events, fds[3].fd, fds[3].events,
 		 timeout.tv_sec, timeout.tv_usec, strerror(errno));
@@ -1134,8 +1156,7 @@ int _socat(void) {
 	 } else if (polling && wasaction) {
 	    wasaction = 0;
 
-	 } else if (socat_opts.total_timeout.tv_sec != 0 ||
-		    socat_opts.total_timeout.tv_usec != 0) {
+	 } else if (socat_opts.total_timeout.tv_usec < 1000000) {
 	    /* there was a total inactivity timeout */
 	    Notice("inactivity timeout triggered");
 		  free(buff);
@@ -1318,7 +1339,6 @@ int _socat(void) {
    should be at least MAXTIMESTAMPLEN bytes long.
    returns 0 on success or -1 if an error occurred */
 int gettimestamp(char *timestamp) {
-   size_t bytes;
 #if HAVE_CLOCK_GETTIME
    struct timespec now;
 #elif HAVE_PROTOTYPE_LIB_gettimeofday
@@ -1346,17 +1366,16 @@ int gettimestamp(char *timestamp) {
    }
 #endif
 #if HAVE_STRFTIME
-   bytes = strftime(timestamp, 20, "%Y/%m/%d %H:%M:%S", localtime(&nowt));
+   strftime(timestamp, 20, "%Y/%m/%d %H:%M:%S", localtime(&nowt));
 #if HAVE_CLOCK_GETTIME
-   bytes += sprintf(timestamp+19, "."F_tv_nsec" ", now.tv_nsec/1000);
+   sprintf(timestamp+19, "."F_tv_nsec" ", now.tv_nsec/1000);
 #elif HAVE_PROTOTYPE_LIB_gettimeofday
-   bytes += sprintf(timestamp+19, "."F_tv_usec" ", now.tv_usec);
+   sprintf(timestamp+19, "."F_tv_usec" ", now.tv_usec);
 #else
    strncpy(&timestamp[bytes++], " ", 2);
 #endif
 #else
    strcpy(timestamp, ctime(&nowt));
-   bytes = strlen(timestamp);
 #endif
    return 0;
 }

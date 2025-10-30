@@ -12,6 +12,7 @@
 #include "xio-progcall.h"
 
 #include "xio-socket.h"
+#include "xio-socketpair.h"
 
 
 /* these options are used by address pty too */
@@ -23,7 +24,7 @@ const struct optdesc opt_ptmx    = { "ptmx",      NULL, OPT_PTMX,        GROUP_P
 #endif
 const struct optdesc opt_sitout_eio = { "sitout-eio", NULL, OPT_SITOUT_EIO, GROUP_PTY, PH_OFFSET, TYPE_TIMEVAL, OFUNC_OFFSET, XIO_OFFSETOF(para.exec.sitout_eio), XIO_SIZEOF(para.exec.sitout_eio) };
 
-#if WITH_EXEC || WITH_SYSTEM
+#if WITH_EXEC || WITH_SYSTEM || WITH_SHELL
 
 #define MAXPTYNAMELEN 64
 
@@ -56,7 +57,7 @@ int _xioopen_foxec(int xioflags,	/* XIO_RDONLY etc. */
    struct opt *popts = NULL;	/* parent options */
    struct opt *copts;		/* child options */
    int numleft;
-   int d, sv[2], rdpip[2], wrpip[2];
+   int sv[2], rdpip[2], wrpip[2];
    int rw = (xioflags & XIO_ACCMODE);
    bool usepipes = false;
 #if HAVE_PTY
@@ -355,10 +356,11 @@ int _xioopen_foxec(int xioflags,	/* XIO_RDONLY etc. */
       /* end withfork, use_pipes */
    } else {
       /* withfork, socketpair */
+      int pf;
 
-      d = AF_UNIX;
-      retropt_int(opts, OPT_PROTOCOL_FAMILY, &d);
-      result = xiosocketpair(opts, d, SOCK_STREAM, 0, sv);
+      pf = AF_UNIX;
+      retropt_socket_pf(opts, &pf);
+      result = xiosocketpair(opts, pf, SOCK_STREAM, 0, sv);
       if (result < 0) {
 	 return -1;
       }
@@ -622,7 +624,7 @@ int _xioopen_foxec(int xioflags,	/* XIO_RDONLY etc. */
    *optsp = popts;
    return pid;	/* indicate parent (main) process */
 }
-#endif /* WITH_EXEC || WITH_SYSTEM */
+#endif /* WITH_EXEC || WITH_SYSTEM || WITH_SHELL */
 
 
 int setopt_path(struct opt *opts, char **path) {

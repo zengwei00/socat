@@ -23,11 +23,11 @@ static char *inet6addr_info(const struct in6_addr *sa, char *buff, size_t blen);
 #ifdef IPV6_V6ONLY
 const struct optdesc opt_ipv6_v6only = { "ipv6-v6only", "ipv6only", OPT_IPV6_V6ONLY, GROUP_SOCK_IP6, PH_PREBIND, TYPE_INT, OFUNC_SOCKOPT, SOL_IPV6, IPV6_V6ONLY };
 #endif
-#ifdef IPV6_JOIN_GROUP
-const struct optdesc opt_ipv6_join_group = { "ipv6-join-group", "join-group", OPT_IPV6_JOIN_GROUP, GROUP_SOCK_IP6, PH_PASTSOCKET, TYPE_IP_MREQN, OFUNC_SOCKOPT, SOL_IPV6, IPV6_JOIN_GROUP };
+#if defined(HAVE_STRUCT_IP_MREQ) || defined(HAVE_STRUCT_IP_MREQN)
+const struct optdesc opt_ipv6_join_group = { "ipv6-join-group", "join-group", OPT_IPV6_JOIN_GROUP, GROUP_SOCK_IP6, PH_PASTSOCKET, TYPE_IP_MREQN, OFUNC_SPEC, SOL_IPV6, IPV6_JOIN_GROUP };
 #endif
 #ifdef MCAST_JOIN_SOURCE_GROUP
-const struct optdesc opt_ipv6_join_source_group = { "ipv6-join-source-group", "join-source-group", OPT_IPV6_JOIN_SOURCE_GROUP, GROUP_SOCK_IP6, PH_PASTSOCKET, TYPE_GROUP_SOURCE_REQ, OFUNC_SOCKOPT, SOL_IPV6, MCAST_JOIN_SOURCE_GROUP };
+const struct optdesc opt_ipv6_join_source_group = { "ipv6-join-source-group", "join-source-group", OPT_IPV6_JOIN_SOURCE_GROUP, GROUP_SOCK_IP6, PH_PASTSOCKET, TYPE_GROUP_SOURCE_REQ, OFUNC_SPEC, SOL_IPV6, MCAST_JOIN_SOURCE_GROUP };
 #endif
 #ifdef IPV6_PKTINFO
 const struct optdesc opt_ipv6_pktinfo = { "ipv6-pktinfo", "pktinfo", OPT_IPV6_PKTINFO, GROUP_SOCK_IP6, PH_PASTSOCKET, TYPE_INT, OFUNC_SOCKOPT, SOL_IPV6, IPV6_PKTINFO };
@@ -249,7 +249,7 @@ int xiocheckrange_ip6(struct sockaddr_in6 *pa, struct xiorange *range) {
 
 #if defined(HAVE_STRUCT_CMSGHDR) && defined(CMSG_DATA)
 /* provides info about the ancillary message:
-   converts the ancillary message in *cmsg into a form useable for further
+   converts the ancillary message in *cmsg into a form usable for further
    processing. knows the specifics of common message types.
    returns the number of resulting syntax elements in *num
    returns a sequence of \0 terminated type strings in *typbuff

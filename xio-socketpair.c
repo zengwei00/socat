@@ -7,6 +7,7 @@
 #include "xiosysincludes.h"
 #include "xioopen.h"
 
+#include "xio-socket.h"
 #include "xio-named.h"
 
 #include "xio-socketpair.h"
@@ -44,7 +45,7 @@ static int xioopen_socketpair(
    sfd->para.bipipe.socktype = SOCK_DGRAM;
    if (applyopts_single(sfd, opts, PH_INIT) < 0)  return -1;
    applyopts(sfd, -1, opts, PH_INIT);
-   retropt_int(opts, OPT_PROTOCOL_FAMILY, &pf);
+   retropt_socket_pf(opts, &pf);
    retropt_int(opts, OPT_SO_TYPE, &sfd->para.bipipe.socktype);
    retropt_int(opts, OPT_SO_PROTOTYPE, &protocol);
 
@@ -94,3 +95,26 @@ static int xioopen_socketpair(
 }
 
 #endif /* WITH_SOCKETPAIR */
+
+
+#if _WITH_SOCKETPAIR
+
+/* retrieves options so-type and so-prototype from opts, calls socketpair, and
+   ev. generates an appropriate error message.
+   returns 0 on success or -1 if an error occurred. */
+int
+xiosocketpair(struct opt *opts, int pf, int socktype, int proto, int sv[2]) {
+   int result;
+
+   retropt_int(opts, OPT_SO_TYPE, &socktype);
+   retropt_int(opts, OPT_SO_PROTOTYPE, &proto);
+   result = Socketpair(pf, socktype, proto, sv);
+   if (result < 0) {
+      Error5("socketpair(%d, %d, %d, %p): %s",
+	     pf, socktype, proto, sv, strerror(errno));
+      return -1;
+   }
+   return result;
+}
+
+#endif /* _WITH_SOCKETPAIR */

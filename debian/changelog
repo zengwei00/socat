@@ -1,3 +1,36 @@
+socat (1.8.0.3-1) unstable; urgency=medium
+
+  [ Bastian Germann <bage@debian.org> ]
+  * Update copyright file (closes: #1100875).
+
+  [ Laszlo Boszormenyi (GCS) <gcs@debian.org> ]
+  * New upstream release.
+  * Update patches.
+  * Update disabled tests list (closes: #1091603).
+  * Make package linux-only.
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Mon, 31 Mar 2025 22:50:04 +0200
+
+socat (1.8.0.2-1) unstable; urgency=medium
+
+  * New upstream release, fixing CVE-2024-54661.
+  * Disable tests for not working on ports buildds.
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 22 Dec 2024 16:21:12 +0100
+
+socat (1.8.0.1-2) unstable; urgency=medium
+
+  * Disable tests for not working on buildds.
+  * Make rebuildable.
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Mon, 26 Aug 2024 18:33:38 +0200
+
+socat (1.8.0.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 25 Aug 2024 09:12:16 +0200
+
 socat (1.8.0.0-4) unstable; urgency=medium
 
   * Disable remaining tests for not working on buildds.

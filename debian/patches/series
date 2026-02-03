@@ -6,3 +6,4 @@
 08-test.sh-fixes.patch
 09-xioinitialize.c.patch
 10-error.c-buffer-overflow-in-msg2.patch
+CVE-2024-54661.patch
